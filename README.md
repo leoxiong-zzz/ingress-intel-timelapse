@@ -19,13 +19,13 @@ This is a [PhantomJS](http://phantomjs.org/) script to render screenshots of bor
 	)
 	```
 
-4. Run shell script
+4. Run batch script
 
 	`scheduler.bat`
 
 **Linux**
 
-1. Install PhantomJS from a repo or [download](http://phantomjs.org/download.html) from PhantomJs
+1. Install PhantomJS from a repo or [download](http://phantomjs.org/download.html) from PhantomJS
 
 	`# apt-get install phantomjs`
 
@@ -43,6 +43,16 @@ This is a [PhantomJS](http://phantomjs.org/) script to render screenshots of bor
 4. Run shell script
 
 	`sh scheduler.sh`
+
+### Creating GIF
+
+1. Install ImageMagick from a repo or [download](http://www.imagemagick.org/script/binary-releases.php) from ImageMagick
+
+	`# apt-get install imagemagick`
+
+2. Create GIF
+
+	`$ convert -delay 20 -loop 0 *.png timelapse.gif`
 
 
 ### Tips
