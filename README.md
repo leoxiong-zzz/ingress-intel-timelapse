@@ -2,6 +2,8 @@
 
 This is a [PhantomJS](http://phantomjs.org/) script to render screenshots of borderless [Ingress Intel Map](https://ingress.com/intel). It can be used in conjunction with task schedulers to periodically take screenshots of the map which can be used to create a timelapse. Originally written to create timelapse GIFs for operations.
 
+![GIF timelapse of Enlightened operation](https://lh3.googleusercontent.com/-1D190tIm4u4/VBzhk-qHKhI/AAAAAAAAUok/HorLaDjScsQ/w1280-h720/timelapse.gif)
+
 ### How to setup
 **Windows**
 
