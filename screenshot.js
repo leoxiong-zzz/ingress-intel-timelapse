@@ -14,9 +14,9 @@
 var cookie_session_id = "[insert SACSID cookie here]";
 
 // Latitude (ingress.intelmap.lat), longitude (ingress.intelmap.long), and zoom level (ingress.intelmap.map_zoom) of map. Can be found in URL too.
-var map_latitude = -37.775176;
-var map_longitude = 175.264924;
-var map_zoom = 10;
+var map_latitude = -41.282478;
+var map_longitude = 174.769837;
+var map_zoom = 13;
 
 // Portal level lower range.
 var portal_lower_range = 1;
@@ -33,8 +33,6 @@ var screenshot_filename = function () {
 
 // Time in ms before timing out screenshot.
 var timeout = 120000;
-
-
 
 //
 setTimeout(function () {
@@ -139,8 +137,8 @@ page.open('https://ingress.com/intel', function (status) {
 });
 
 page.onResourceError = function (resourceError) {
-    console.log("Unable to load resource (#" + resourceError.id + "URL:" + resourceError.url + ")");
-    console.log("Error code: " + resourceError.errorCode + ". Description: " + resourceError.errorString);
+    system.stderr.writeLine("Unable to load resource (#" + resourceError.id + "URL:" + resourceError.url + ")");
+    system.stderr.writeLine("Error code: " + resourceError.errorCode + ". Description: " + resourceError.errorString);
 };
 
 Object.defineProperty(Date.prototype, "YYYYMMDDHHMMSS", {
