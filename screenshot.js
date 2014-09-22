@@ -11,140 +11,121 @@
  */
 
 // Session ID (SACSID)
-var cookie_session_id = "[insert SACSID cookie here]";
+var cookie_sacsid_id = '[insert SACSID cookie here]';
 
-// Latitude (ingress.intelmap.lat), longitude (ingress.intelmap.long), and zoom level (ingress.intelmap.map_zoom) of map. Can be found in URL too.
-var map_latitude = -41.282478;
-var map_longitude = 174.769837;
-var map_zoom = 13;
+// CSRF token (csrftoken)
+var cookie_csrf_token = '[insert csrftoken cookie here]';
 
-// Portal level lower range.
-var portal_lower_range = 1;
-var portal_higher_range = 8;
+// Intel URL, click 'Link' on the top right of the map to copy
+var intel_url = 'https://www.ingress.com/intel?ll=-37.775176,175.264924&z=12';
 
-// Width and height of screenshots.
-var screenshot_width = 1920;
-var screenshot_height = 1080;
+// Portal level range (0 - 8 to display all)
+var portal_min_level = 0;
+var portal_max_level = 8;
 
-// Name of screenshots. Ensure that the name does not contain illegal characters in your filesystem.
+// Size of screenshot
+var screenshot_width = 1280;
+var screenshot_height = 720;
+
+// Time in ms before timing out screenshot
+var timeout = 300000;
+
+// Name of screenshots (ensure name does not contain illegal characters in your filesystem)
 var screenshot_filename = function () {
-    return new Date().YYYYMMDDHHMMSS() + ".png";
+    return new Date().YYYYMMDDHHMMSS() + '.png';
 };
 
-// Time in ms before timing out screenshot.
-var timeout = 120000;
-
-//
+/* Configuration ends */
 setTimeout(function () {
-    console.log("timed out after " + (new Date() - start) + "ms");
-    phantom.exit()
+    system.stderr.writeLine('timed out');
+    phantom.exit();
 }, timeout);
+
+phantom.addCookie({
+    name: 'SACSID',
+    value: cookie_sacsid_id,
+    domain: 'www.ingress.com',
+    path: '/',
+    httponly: true,
+    secure: true
+});
+phantom.addCookie({
+    name: 'csrftoken',
+    value: cookie_csrf_token,
+    domain: 'www.ingress.com',
+    path: '/'
+});
 
 var system = require('system');
 var page = require('webpage').create();
 
-page.viewportSize = {width: screenshot_width, height: screenshot_height};
+page.settings.userAgent = 'IngressIntelTimelapse (+https://github.com/NameLess-exe/ingress-intel-timelapse)';
 
-phantom.addCookie({
-    'name': 'SACSID',
-    'value': cookie_session_id,
-    'domain': 'www.ingress.com',
-    'path': '/',
-    'httponly': true,
-    'secure': true
-});
-phantom.addCookie({
-    'name': 'ingress.intelmap.lat',
-    'value': map_latitude,
-    'domain': 'www.ingress.com',
-    'path': '/'
-});
-phantom.addCookie({
-    'name': 'ingress.intelmap.lng',
-    'value': map_longitude,
-    'domain': 'www.ingress.com',
-    'path': '/'
-});
-phantom.addCookie({
-    'name': 'ingress.intelmap.zoom',
-    'value': map_zoom,
-    'domain': 'www.ingress.com',
-    'path': '/'
-});
-
-var progress = 0;
-
-var start = new Date();
-page.open('https://ingress.com/intel', function (status) {
-    switch (status) {
-        case "success":
-            setTimeout(function () {
-                page.evaluate(function (portal_lower_range, portal_higher_range) {
-                    // Set portal level range
-                    var click = document.createEvent("MouseEvent");
-                    click.initMouseEvent("click", true, true, window, null, 0, 0, 0, 0, false, false, false, false, 0, null);
-                    document.getElementById("level_low" + portal_lower_range).dispatchEvent(click);
-                    document.getElementById("level_high" + portal_higher_range).dispatchEvent(click);
-
-                    // Fullscreen map
-                    var map = document.getElementById("map_canvas");
-                    map.style.position = "fixed";
-                    map.style.width = "100%";
-                    map.style.height = "100%";
-                    map.style.zIndex = 9999;
-                    map.style.top = 0;
-                    map.style.left = 0;
-
-                    // Location button
-                    document.getElementById("snapcontrol").style.display = "none";
-
-                    K.setOptions({disableDefaultUI: true});
-                }, portal_lower_range, portal_higher_range);
-
-                // Poll #loading_msg till display: none
-                (function () {
-                    var progress = page.evaluate(function () {
-                        return document.getElementById("percent_text").innerHTML | 0;
-                    });
-                    // Show progress bar in stdout
-                    system.stdout.write("\r[");
-                    for (var i = -5; i < progress; i += 5)  system.stdout.write("|");
-                    for (; i < 100; i += 5) system.stdout.write(" ");
-                    system.stdout.write("] " + progress + "%\t" + (new Date() - start) + "ms");
-
-                    // If map loaded
-                    if (page.evaluate(function () {
-                        return document.getElementById("loading_msg").style.display;
-                    }) == "none") {
-                        system.stdout.writeLine("");
-
-                        // Render screenshot after a delay
-                        setTimeout(function () {
-                            var f = screenshot_filename();
-                            page.render(f);
-                            console.log(f + " saved");
-                            phantom.exit();
-                        }, 1000);
-                    } else
-                        setTimeout(arguments.callee, 1000);
-                })();
-            }, 1000);
-            break;
-        default:
-            console.log("Page open status: " + status);
-            phantom.exit(-1);
-    }
-});
-
-page.onResourceError = function (resourceError) {
-    system.stderr.writeLine("Unable to load resource (#" + resourceError.id + "URL:" + resourceError.url + ")");
-    system.stderr.writeLine("Error code: " + resourceError.errorCode + ". Description: " + resourceError.errorString);
+page.viewportSize = {
+    width: screenshot_width,
+    height: screenshot_height
 };
 
-Object.defineProperty(Date.prototype, "YYYYMMDDHHMMSS", {
+page.onResourceError = function (resourceError) {
+    system.stderr.writeLine('Unable to load resource (#' + resourceError.id + 'URL:' + resourceError.url + ')');
+    system.stderr.writeLine('Error code: ' + resourceError.errorCode + '. Description: ' + resourceError.errorString);
+};
+
+console.log('opening ' + intel_url);
+page.open(intel_url, function () {
+    console.log('opened');
+    setTimeout(function () {
+        page.evaluate(function (portal_min_level, portal_max_level) {
+            var click = document.createEvent('MouseEvent');
+            click.initMouseEvent('click', true, true, window, null, 0, 0, 0, 0, false, false, false, false, 0, null);
+            document.getElementById('level_low' + portal_min_level).dispatchEvent(click);
+            document.getElementById('level_high' + portal_max_level).dispatchEvent(click);
+
+            var map = document.getElementById('map_canvas');
+            map.style.position = 'fixed';
+            map.style.width = '100%';
+            map.style.height = '100%';
+            map.style.zIndex = 9999;
+            map.style.top = 0;
+            map.style.left = 0;
+
+            document.getElementById('snapcontrol').style.display = 'none';
+
+            K.setOptions({disableDefaultUI: true});
+        }, portal_min_level, portal_max_level);
+
+        console.log('loading intel...');
+        var start = new Date();
+        (function () {
+            if (page.evaluate(function () {
+                return document.getElementById('loading_msg').style.display;
+            }) == 'none') {
+                system.stdout.writeLine('');
+                console.log('intel loaded, settling...');
+                setTimeout(function () {
+                    var filename = screenshot_filename();
+                    page.render(filename);
+                    console.log('cheese! ' + filename + ' saved');
+                    phantom.exit();
+                }, 2000);
+            } else {
+                var progress = page.evaluate(function () {
+                    return document.getElementById('percent_text').innerHTML | 0;
+                });
+                system.stdout.write('\r[');
+                for (var i = 0; i < progress; i += 5) system.stdout.write('|');
+                for (var i = progress; i <= 95; i += 5) system.stdout.write(' ');
+                system.stdout.write('] ' + progress + '%\t' + (new Date() - start) + 'ms');
+                setTimeout(arguments.callee, 1000);
+            }
+        })();
+    }, 2000);
+});
+
+Object.defineProperty(Date.prototype, 'YYYYMMDDHHMMSS', {
     value: function () {
         function pad2(n) {
-            return (n < 10 ? "0" : "") + n;
+            return (n < 10 ? '0' : '') + n;
         }
 
         return this.getFullYear()
