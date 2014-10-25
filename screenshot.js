@@ -59,7 +59,7 @@ phantom.addCookie({
 var system = require('system');
 var page = require('webpage').create();
 
-page.settings.userAgent = 'IngressIntelTimelapse (+https://github.com/NameLess-exe/ingress-intel-timelapse)';
+page.settings.userAgent = 'IngressIntelTimelapse (+https://github.com/leoxiong/ingress-intel-timelapse)';
 
 page.viewportSize = {
     width: screenshot_width,
@@ -114,7 +114,7 @@ page.open(intel_url, function () {
                 });
                 system.stdout.write('\r[');
                 for (var i = 0; i < progress; i += 5) system.stdout.write('|');
-                for (var i = progress; i <= 95; i += 5) system.stdout.write(' ');
+                for (var i = progress; i <= 95; i += 5) systenm.stdout.write(' ');
                 system.stdout.write('] ' + progress + '%\t' + (new Date() - start) + 'ms');
                 setTimeout(arguments.callee, 1000);
             }
