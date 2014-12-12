@@ -90,8 +90,12 @@ page.open(intel_url, function () {
             map.style.left = 0;
 
             document.getElementById('snapcontrol').style.display = 'none';
-
-            K.setOptions({disableDefaultUI: true});
+            
+            for (var i in window) {
+              if (window[i] && window[i].setOptions) {
+                window[i].setOptions({disableDefaultUI: true});
+              }
+            }
         }, portal_min_level, portal_max_level);
 
         console.log('loading intel...');
