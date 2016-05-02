@@ -32,7 +32,7 @@ var timeout = 300000;
 
 // Name of screenshots (ensure name does not contain illegal characters in your filesystem)
 var screenshot_filename = function () {
-    return new Date().YYYYMMDDHHMMSS() + '.png';
+    return YYYYMMDDHHMMSS() + '.png';
 };
 
 /* Configuration ends */
@@ -90,11 +90,11 @@ page.open(intel_url, function () {
             map.style.left = 0;
 
             document.getElementById('snapcontrol').style.display = 'none';
-            
+
             for (var i in window) {
-              if (window[i] && window[i].setOptions) {
-                window[i].setOptions({disableDefaultUI: true});
-              }
+                if (window[i] && window[i].setOptions) {
+                    window[i].setOptions({disableDefaultUI: true});
+                }
             }
         }, portal_min_level, portal_max_level);
 
@@ -102,8 +102,8 @@ page.open(intel_url, function () {
         var start = new Date();
         (function () {
             if (page.evaluate(function () {
-                return document.getElementById('loading_msg').style.display;
-            }) == 'none') {
+                    return document.getElementById('loading_msg').style.display;
+                }) == 'none') {
                 system.stdout.writeLine('');
                 console.log('intel loaded, settling...');
                 setTimeout(function () {
@@ -126,17 +126,17 @@ page.open(intel_url, function () {
     }, 2000);
 });
 
-Object.defineProperty(Date.prototype, 'YYYYMMDDHHMMSS', {
-    value: function () {
-        function pad2(n) {
-            return (n < 10 ? '0' : '') + n;
-        }
+function YYYYMMDDHHMMSS() {
+    var date = new Date();
 
-        return this.getFullYear()
-            + pad2(this.getMonth() + 1)
-            + pad2(this.getDate())
-            + pad2(this.getHours())
-            + pad2(this.getMinutes())
-            + pad2(this.getSeconds());
-    }
-});
+    return date.getFullYear()
+        + pad2(date.getMonth() + 1)
+        + pad2(date.getDate())
+        + pad2(date.getHours())
+        + pad2(date.getMinutes())
+        + pad2(date.getSeconds());
+}
+
+function pad2(n) {
+    return (n < 10 ? '0' : '') + n;
+}
