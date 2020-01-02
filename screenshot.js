@@ -11,13 +11,13 @@
  */
 
 // Session ID (SACSID)
-var cookie_sacsid_id = '[insert SACSID cookie here]';
+var cookie_session_id = '[insert sessionid cookie here]';
 
 // CSRF token (csrftoken)
 var cookie_csrf_token = '[insert csrftoken cookie here]';
 
 // Intel URL, click 'Link' on the top right of the map to copy
-var intel_url = 'https://www.ingress.com/intel?ll=-37.775176,175.264924&z=12';
+var intel_url = 'https://intel.ingress.com/intel?ll=-37.775176,175.264924&z=12';
 
 // Portal level range (0 - 8 to display all)
 var portal_min_level = 0;
@@ -42,9 +42,9 @@ setTimeout(function () {
 }, timeout);
 
 phantom.addCookie({
-    name: 'SACSID',
-    value: cookie_sacsid_id,
-    domain: 'www.ingress.com',
+    name: 'sessionid',
+    value: cookie_session_id,
+    domain: 'intel.ingress.com',
     path: '/',
     httponly: true,
     secure: true
@@ -52,7 +52,7 @@ phantom.addCookie({
 phantom.addCookie({
     name: 'csrftoken',
     value: cookie_csrf_token,
-    domain: 'www.ingress.com',
+    domain: 'intel.ingress.com',
     path: '/'
 });
 
